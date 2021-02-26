@@ -51,10 +51,7 @@
       padding-bottom: 2em;
     }
   </style>
-  <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.min.css" />
 </head>
 
 <body>
@@ -64,15 +61,17 @@
   <div id="viewer" style=""></div>
 
   <script>
-    var modelPlayer = this['js-3d-model-viewer'];
-    var viewerElement = document.getElementById('viewer')
-    var scene = modelPlayer.prepareScene(viewerElement)
-    modelPlayer.loadObject(scene, './assets/2pyj_rainbow.obj')
+    window.addEventListener("load", function(){
+      var modelPlayer = this['js-3d-model-viewer'];
+      var viewerElement = document.getElementById('viewer')
+      var scene = modelPlayer.prepareScene(viewerElement)
+      modelPlayer.loadObject(scene, './assets/2pyj_rainbow.obj')
 
-    var fullScreenButton = document.getElementById('fullscreen-button')
-    fullScreenButton.addEventListener('click', function () {
-      modelPlayer.goFullScreen(viewerElement)
-    })
+      var fullScreenButton = document.getElementById('fullscreen-button')
+      fullScreenButton.addEventListener('click', function () {
+        modelPlayer.goFullScreen(viewerElement)
+      })
+    });
   </script>
 
 
