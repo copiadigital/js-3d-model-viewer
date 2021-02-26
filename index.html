@@ -59,13 +59,17 @@
 
 
   <div id="viewer" style=""></div>
+  <button value="Fullscreen" id="fullscreen-button">Fullscreen</button>
 
   <script>
     window.addEventListener("load", function(){
       var modelPlayer = this['js-3d-model-viewer'];
       var viewerElement = document.getElementById('viewer')
       var scene = modelPlayer.prepareScene(viewerElement)
-      modelPlayer.loadObject(scene, './assets/2pyj_rainbow.obj')
+      modelPlayer.loadObject(scene,
+              './assets/2pyj_rainbow.obj',
+              './assets/2pyj_rainbow.mtl',
+    )
 
       var fullScreenButton = document.getElementById('fullscreen-button')
       fullScreenButton.addEventListener('click', function () {
