@@ -1,6 +1,7 @@
 import * as THREE from 'three'
-import {MTLLoader, OBJLoader} from 'three-obj-mtl-loader'
 const OrbitControls = require('three-orbit-controls')(THREE)
+import {MTLLoader, OBJLoader} from 'three-obj-mtl-loader'
+
 
 const emitEvent = (element, eventName, data) => {
   element.dispatchEvent(new window.CustomEvent(eventName, {
@@ -73,7 +74,7 @@ const setControls = (camera, renderer) => {
  * Configure Three renderer.
  */
 const setRenderer = (width, height) => {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  const renderer = new THREE.WebGLRenderer({alpha: true})
   renderer.setSize(width, height)
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setClearColor(0x000000, 0)
@@ -149,41 +150,36 @@ const loadObj = (objLoader, scene, url, callback) => {
   const material = new THREE.MeshPhongMaterial({ color: 0xbbbbcc })
 
   objLoader.load(url, (obj) => {
-    obj.geometry.computeVertexNormals()
-    obj.geometry.mergeVertices()
-    if (!objLoader.materials) {
-      obj.traverse((child) => {
-        child.geometry.computeVertexNormals()
-        child.geometry.mergeVertices()
-        if (child instanceof THREE.Mesh) {
-          child.material = material
+        if (!objLoader.materials) {
+          obj.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material = material
+            }
+          })
         }
+        scene.add(obj)
+        fitCameraToObject(scene.camera, obj, scene.lights)
+        scene.locked = false
+        if (callback) callback(obj)
+        emitEvent(scene.element, 'loaded', {obj})
+      },
+      (xhr) => {
+        if (xhr.total === 0) {
+          emitEvent(scene.element, 'loading', {
+            loaded: 0,
+            total: 100
+          })
+        } else {
+          emitEvent(scene.element, 'loading', {
+            loaded: xhr.loaded,
+            total: xhr.total
+          })
+        }
+      },
+      (err) => {
+        emitEvent(scene.element, 'error', {err})
+        if (callback) callback(err)
       })
-    }
-    mesh.geometry.computeVertexNormals()
-    scene.add(obj)
-    fitCameraToObject(scene.camera, obj, scene.lights)
-    scene.locked = false
-    if (callback) callback(obj)
-    emitEvent(scene.element, 'loaded', {obj})
-  },
-  (xhr) => {
-    if (xhr.total === 0) {
-      emitEvent(scene.element, 'loading', {
-        loaded: 0,
-        total: 100
-      })
-    } else {
-      emitEvent(scene.element, 'loading', {
-        loaded: xhr.loaded,
-        total: xhr.total
-      })
-    }
-  },
-  (err) => {
-    emitEvent(scene.element, 'error', {err})
-    if (callback) callback(err)
-  })
 }
 
 /*
@@ -229,17 +225,14 @@ const goFullScreen = (element) => {
  * avoid distortions.
  */
 const onWindowResize = (element, camera, renderer) => () => {
-  const resize = () => {
-    const isFullscreen = !window.screenTop && !window.screenY
-    const width = isFullscreen ? window.innerWidth : element.offsetWidth
-    const height = isFullscreen ? window.innerHeight : element.offsetHeight
-    const aspect = width / height
-    camera.aspect = aspect
-    camera.updateProjectionMatrix()
-    renderer.setSize(width, height)
-  }
-  resize()
-  setTimeout(resize, 100)
+  const isFullscreen = !window.screenTop && !window.screenY
+  const width = isFullscreen ? window.innerWidth : element.offsetWidth
+  const height = isFullscreen ? window.innerHeight : element.offsetHeight
+  const aspect = width / height
+
+  camera.aspect = aspect
+  camera.updateProjectionMatrix()
+  renderer.setSize(width, height)
 }
 
 /*
