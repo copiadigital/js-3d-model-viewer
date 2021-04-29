@@ -73,10 +73,10 @@ const setControls = (camera, renderer) => {
  * Configure Three renderer.
  */
 const setRenderer = (width, height) => {
-  const renderer = new THREE.WebGLRenderer({ antialias: true })
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
   renderer.setSize(width, height)
   renderer.setPixelRatio(window.devicePixelRatio)
-  renderer.setClearColor(new THREE.Color('hsl(0, 0%, 10%)'))
+  renderer.setClearColor(0x000000, 0)
   return renderer
 }
 
